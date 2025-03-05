@@ -7,6 +7,11 @@ const App = () => {
   const [users, setUsers] = useState(null)
   const [loading, setLoading] = useState(null)
   const [error, setError] = useState(null)
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
+  const [telephone, setTelephone] = useState("")
+  const [address, setAddress] = useState("")
+  const [hobbies, setHobbies] = useState([])
 
   const fetchAPI = async () => {
     setLoading(true)
@@ -23,6 +28,20 @@ const App = () => {
     }
   }
 
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    try{
+      const addNewUser = await axios.post(`http://localhost:8000/api/users`, {firstName, lastName, telephone, address, hobbies})
+     
+    }
+    catch(err){
+      console.log(err)
+    }
+    finally{
+      fetchAPI()
+    }
+  }
+
   useEffect(() => {
     fetchAPI()
   }, [])
@@ -34,14 +53,23 @@ const App = () => {
     {users && !loading && users.map(user => {
       return (
         <div key={user.id}>
-          <h3>Prenom : {user.firstName}</h3>
-          <h3>Nom : {user.lastName}</h3>
-          <h3>Tel : {user.telephone}</h3>
-          <h3>Adresse : {user.address}</h3>
-          <h3>hobbies : {user.hobbies}</h3>
+          <h2>Prenom : {user.firstName}</h2>
+          <h4>Nom : {user.lastName}</h4>
+          <h4>Tel : {user.telephone}</h4>
+          <h4>Adresse : {user.address}</h4>
+          <h4>hobbies : {user.hobbies.join(", ")}</h4>
         </div>
       )
     })}
+
+    <form action="POST" onSubmit={handleSubmit}>
+      <input type="text" placeholder="prenom" required onChange={e => setFirstName(e.target.value)} />
+      <input type="text" placeholder="nom" required onChange={e => setLastName(e.target.value)} />
+      <input type="text" placeholder="tel" required onChange={e => setTelephone(e.target.value)} />
+      <input type="text" placeholder="adresse" required onChange={e => setAddress(e.target.value)} />
+      <input type="text" placeholder="hobbies" required onChange={e => setHobbies(e.target.value.split(","))} />
+      <input type="submit"/>
+    </form>
     </>
   )
 }
